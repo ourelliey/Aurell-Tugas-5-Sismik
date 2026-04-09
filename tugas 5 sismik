@@ -1,0 +1,82 @@
+// Lampu Kendaraan (Atas)
+const int kendaraanMerah  = 8;
+const int kendaraanKuning = 9;
+const int kendaraanHijau  = 10;
+
+// Lampu Pedestrian Jalur 1 (Tengah)
+const int pedMerah1  = 11;
+const int pedHijau1  = 12;
+
+// Lampu Pedestrian Jalur 2 (Bawah)
+const int pedMerah2  = 6;
+const int pedHijau2  = 7;
+
+// Tombol
+const int tombolPin  = 11;
+
+void setup() {
+  // Setel semua pin sebagai OUTPUT
+  pinMode(kendaraanMerah, OUTPUT);
+  pinMode(kendaraanKuning, OUTPUT);
+  pinMode(kendaraanHijau, OUTPUT);
+  pinMode(pedMerah1, OUTPUT);
+  pinMode(pedHijau1, OUTPUT);
+  pinMode(pedMerah2, OUTPUT);
+  pinMode(pedHijau2, OUTPUT);
+
+  // Input tombol dengan resistor internal
+  pinMode(tombolPin, INPUT_PULLUP);
+}
+
+void loop() {
+  // --- FASE 1: KONDISI AWAL ---
+  // Kendaraan Hijau, Semua Pejalan Kaki Merah
+  digitalWrite(kendaraanHijau,  HIGH);
+  digitalWrite(kendaraanKuning, LOW);
+  digitalWrite(kendaraanMerah,  LOW);
+  
+  digitalWrite(pedMerah1, HIGH);
+  digitalWrite(pedHijau1, LOW);
+  digitalWrite(pedMerah2, HIGH);
+  digitalWrite(pedHijau2, LOW);
+
+  // Tunggu tombol ditekan
+  if (digitalRead(tombolPin) == LOW) {
+    delay(500); // Debounce
+    jalankanSiklus();
+  }
+}
+
+void jalankanSiklus() {
+  // --- TRANSISI (Kuning) ---
+  digitalWrite(kendaraanHijau,  LOW);
+  digitalWrite(kendaraanKuning, HIGH);
+  delay(2000); 
+
+  // --- FASE 2: SAAT DITEKAN ---
+  // Kendaraan MERAH, Pedestrian HIJAU
+  digitalWrite(kendaraanKuning, LOW);
+  digitalWrite(kendaraanMerah,  HIGH);
+  
+  digitalWrite(pedMerah1, LOW);
+  digitalWrite(pedHijau1, HIGH);
+  digitalWrite(pedMerah2, LOW);
+  digitalWrite(pedHijau2, HIGH);
+  
+  // --- FASE 3: SETELAH WAKTU TERTENTU (5 Detik) ---
+  delay(5000); 
+
+  // Pedestrian kembali MERAH
+  digitalWrite(pedHijau1, LOW);
+  digitalWrite(pedMerah1, HIGH);
+  digitalWrite(pedHijau2, LOW);
+  digitalWrite(pedMerah2, HIGH);
+  delay(1000); // Jeda keamanan
+
+  // Kendaraan transisi KUNING sebelum kembali Hijau
+  digitalWrite(kendaraanMerah,  LOW);
+  digitalWrite(kendaraanKuning, HIGH);
+  delay(2000);
+  
+  // Selesai, loop() akan otomatis membuat kendaraan HIJAU lagi
+}
